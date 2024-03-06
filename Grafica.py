@@ -59,3 +59,15 @@ def simular_procesos(env, num_procesos, memoria_ram):
         yield env.timeout(1)
         if env.now >= TIEMPO_TOTAL_SIMULACION:
             break
+
+# Simulación por intervalo y cantidad de RAM
+for i, INTERVALO in enumerate(INTERVALOS):
+    for RAM in [MEMORIA_RAM_INICIAL, MEMORIA_RAM_FINAL]:
+        tiempos_proceso = []
+        for num_proceso in NUM_PROCESOS:
+            env = simpy.Environment()
+            env.process(simular_procesos(env, num_proceso, RAM))
+            env.run(until=TIEMPO_TOTAL_SIMULACION)
+            tiempos_proceso.append(env.now / num_proceso)
+        tiempos_promedio_por_intervalo[i].extend(tiempos_proceso)
+        desviaciones_estandar_por_intervalo[i].append(statistics.stdev(tiempos_proceso))
