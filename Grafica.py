@@ -71,3 +71,22 @@ for i, INTERVALO in enumerate(INTERVALOS):
             tiempos_proceso.append(env.now / num_proceso)
         tiempos_promedio_por_intervalo[i].extend(tiempos_proceso)
         desviaciones_estandar_por_intervalo[i].append(statistics.stdev(tiempos_proceso))
+
+# Gráficos por intervalo
+fig, axs = plt.subplots(len(INTERVALOS), 1, figsize=(10, 10), sharex=True)
+for i, INTERVALO in enumerate(INTERVALOS):
+    for j, RAM in enumerate([MEMORIA_RAM_INICIAL, MEMORIA_RAM_FINAL]):
+        label = f"Intervalo {INTERVALO}, RAM {RAM}"
+        tiempos_promedio = tiempos_promedio_por_intervalo[i][j::2]  # Obtener tiempos promedio para la RAM especificada
+        axs[i].plot(NUM_PROCESOS, tiempos_promedio, label=label)
+        desviaciones_estandar = desviaciones_estandar_por_intervalo[i][j::2]  # Obtener desviaciones estándar para la RAM especificada
+        axs[i].errorbar(NUM_PROCESOS, tiempos_promedio, yerr=desviaciones_estandar, fmt='o')
+    axs[i].set_title(f"Tiempo promedio por proceso (Intervalo {INTERVALO})")
+    axs[i].set_ylabel("Tiempo promedio")
+    axs[i].set_xlabel("Número de procesos")
+    axs[i].legend()
+    axs[i].grid(True)
+
+plt.xlabel("Número de procesos")
+plt.tight_layout()
+plt.show()
